@@ -58,15 +58,15 @@ class Pickler
       local_body || story.to_s(pickler.format)
     end
     
-    def filename(use_named_feature_file = false)
+    def filename
       filename = existing_filename
-      name = use_named_feature_file ? feature_title.gsub(/ /,'_').underscore : id
+      name = feature_title ? feature_title.gsub(/ /,'_').underscore : id
       filename ||= pickler.features_path("#{name}.feature")
     end
     
-    def pull(use_named_feature_file = false)
+    def pull
       story = story() # force the read into local_body before File.open below blows it away
-      File.open(filename(use_named_feature_file),'w') {|f| f.puts self.to_s}
+      File.open(filename, 'w') {|f| f.puts self.to_s}
       @filename = filename
     end
 

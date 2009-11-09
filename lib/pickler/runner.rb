@@ -319,14 +319,10 @@ Previously unseen stories will be given a numeric filename that you are
 encouraged to change.
       EOF
 
-      on "-n", "--named", "generated feature file has pretty name" do |c|
-        @named = true
-      end
-
       process do |*args|
         args.replace(pickler.scenario_features) if args.empty?
         args.each do |identifier|
-          pickler.feature(identifier).pull(@named)
+          pickler.feature(identifier).pull
         end
       end
     end

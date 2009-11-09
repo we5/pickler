@@ -14,15 +14,16 @@ describe Pickler::Feature do
   context "filename" do
     it "should return id if feature file doesn't exist" do
       expected = File.expand_path(File.join(File.dirname(__FILE__), "..", "features", "12345.feature"))
+      @feature.should_receive(:to_s).and_return('')
       @feature.filename.should == expected
     end
 
     it "should return generated filename if feature file doesn't exist" do
       feature_file = File.expand_path(File.join(File.dirname(__FILE__), "..", "features", "12345.feature"))
       @feature.should_receive(:find_feature_filename).and_return(nil)
-      @feature.should_receive(:to_s).and_return('Feature: Fun things to do')
+      @feature.should_receive(:to_s).twice.and_return('Feature: Fun things to do')
       feature_file = File.expand_path(File.join(File.dirname(__FILE__), "..", "features", "fun_things_to_do.feature"))
-      @feature.filename(true).should == feature_file
+      @feature.filename.should == feature_file
     end
   end
 end
