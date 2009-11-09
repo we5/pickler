@@ -1,5 +1,7 @@
 require 'yaml'
 
+require "activesupport"
+
 class Pickler
 
   class Error < RuntimeError

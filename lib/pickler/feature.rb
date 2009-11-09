@@ -33,26 +33,40 @@ class Pickler
     end
 
     def local_body
-      File.read(filename) if filename
+      File.read(filename) if existing_filename
+    end
+    
+    def find_feature_filename
+      Dir[pickler.features_path("**","*.feature")].detect do |f|
+        File.read(f)[/(?:#\s*|@[[:punct:]]?)#{URL_REGEX}/,1].to_i == @id
+      end
     end
 
-    def filename
+    def existing_filename
       unless defined?(@filename)
-        @filename = Dir[pickler.features_path("**","*.feature")].detect do |f|
-          File.read(f)[/(?:#\s*|@[[:punct:]]?)#{URL_REGEX}/,1].to_i == @id
-        end
+        @filename = find_feature_filename
       end
       @filename
+    end
+    
+    def feature_title
+      contents = self.to_s
+      contents[/Feature: (.*)$/, 1]
     end
 
     def to_s
       local_body || story.to_s(pickler.format)
     end
-
-    def pull(default = nil)
-      filename = filename() || pickler.features_path("#{default||id}.feature")
+    
+    def filename(use_named_feature_file = false)
+      filename = existing_filename
+      name = use_named_feature_file ? feature_title.gsub(/ /,'_').underscore : id
+      filename ||= pickler.features_path("#{name}.feature")
+    end
+    
+    def pull(use_named_feature_file = false)
       story = story() # force the read into local_body before File.open below blows it away
-      File.open(filename,'w') {|f| f.puts story.to_s(pickler.format)}
+      File.open(filename(use_named_feature_file),'w') {|f| f.puts self.to_s}
       @filename = filename
     end
 
