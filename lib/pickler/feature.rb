@@ -33,7 +33,7 @@ class Pickler
     end
 
     def local_body
-      File.read(filename) if existing_filename
+      @local_body ||= File.read(filename) if existing_filename
     end
     
     def find_feature_filename
@@ -59,9 +59,11 @@ class Pickler
     end
     
     def filename
-      filename = existing_filename
-      name = feature_title ? feature_title.gsub(/ /,'_').underscore : id
-      filename ||= pickler.features_path("#{name}.feature")
+      unless filename = existing_filename
+        name = feature_title ? feature_title.gsub(/ /,'_').underscore : id
+        filename = pickler.features_path("#{name}.feature")
+      end
+      filename
     end
     
     def pull
